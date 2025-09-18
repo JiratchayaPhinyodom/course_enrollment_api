@@ -142,7 +142,11 @@ setup(
     ),
 
     include_package_data=True,
-    install_requires=load_requirements('requirements/base.in'),
+    install_requires=[
+    "Django>=4.2",
+    "social-auth-app-django>=5.2.0",
+    ],
+
     python_requires=">=3.12",
     license="Apache Software License 2.0",
     zip_safe=False,
