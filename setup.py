@@ -135,7 +135,7 @@ setup(
     long_description=README + '\n\n' + CHANGELOG,
     author='Jiratchaya Phinyodom',
     author_email='jiratchaya.phiny@ku.th',
-    url='https://github.com/openedx/course_enrollment_api',
+    url='https://github.com/JiratchayaPhinyodom/course_enrollment_api.git',
     packages=find_packages(
         include=['course_enrollment_api', 'course_enrollment_api.*'],
         exclude=["*tests"],
