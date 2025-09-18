@@ -135,7 +135,7 @@ setup(
     long_description=README + '\n\n' + CHANGELOG,
     author='JiratchayaPhinyodom',
     author_email='jiratchaya.phiny@ku.th',
-    url='https://github.com/JiratchayaPhinyodom/course_enrollment_api.git',
+    url='https://github.com/JiratchayaPhinyodom/course_enrollment_api',
     packages=find_packages(
         include=['course_enrollment_api', 'course_enrollment_api.*'],
         exclude=["*tests"],
