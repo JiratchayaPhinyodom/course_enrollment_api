@@ -133,7 +133,7 @@ setup(
     version=VERSION,
     description="""One-line description for README and other doc files.""",
     long_description=README + '\n\n' + CHANGELOG,
-    author='Jiratchaya Phinyodom',
+    author='JiratchayaPhinyodom',
     author_email='jiratchaya.phiny@ku.th',
     url='https://github.com/JiratchayaPhinyodom/course_enrollment_api.git',
     packages=find_packages(
