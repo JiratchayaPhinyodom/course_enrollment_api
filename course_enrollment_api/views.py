@@ -3,7 +3,7 @@ import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-LMS_HOST = "lms.example.com"  # Replace with your LMS domain
+LMS_HOST = "learn2.ku.th"  # Replace with your LMS domain
 
 @csrf_exempt
 def enroll_user(request, course_id):
