@@ -158,4 +158,8 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.12',
     ],
+    entry_points={
+        "lms.djangoapp": [
+            "my_app = course_enrollment_api.apps:CourseEnrollmentApiConfig",
+        ]}
 )
