@@ -12,12 +12,12 @@ class CourseEnrollmentApiConfig(AppConfig):
         PluginURLs.CONFIG: {
             "lms.djangoapp": {
                 PluginURLs.NAMESPACE: "course_enrollment_api",
-                PluginURLs.REGEX: r"^plugin/enrollment-api/",
+                PluginURLs.REGEX: r"^api/enrollment-api/",
                 PluginURLs.RELATIVE_PATH: "urls",
             },
             "cms.djangoapp": {
                 PluginURLs.NAMESPACE: "course_enrollment_api",
-                PluginURLs.REGEX: r"^plugin/enrollment-api/",
+                PluginURLs.REGEX: r"^api/enrollment-api/",
                 PluginURLs.RELATIVE_PATH: "urls",
             },
         },
