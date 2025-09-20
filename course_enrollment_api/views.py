@@ -2,11 +2,11 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from common.djangoapps.student.models import UserProfile, CourseEnrollment
 from opaque_keys.edx.keys import CourseKey
-User = get_user_model()
 
+User = get_user_model()
 
 @csrf_exempt
 def enroll_user(request, course_id):
