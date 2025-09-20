@@ -160,6 +160,6 @@ setup(
     ],
     entry_points={
         "lms.djangoapp": [
-            "my_app = course_enrollment_api.apps:CourseEnrollmentApiConfig",
+            "course_enrollment_api = course_enrollment_api.apps:CourseEnrollmentApiConfig",
         ]}
 )

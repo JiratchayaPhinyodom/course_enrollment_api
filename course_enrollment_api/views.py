@@ -1,9 +1,12 @@
+
 import json
-import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from common.djangoapps.student.models import UserProfile, CourseEnrollment
+from opaque_keys.edx.keys import CourseKey
+User = get_user_model()
 
-LMS_HOST = "learn2.ku.th"  # Replace with your LMS domain
 
 @csrf_exempt
 def enroll_user(request, course_id):
@@ -14,26 +17,49 @@ def enroll_user(request, course_id):
         data = json.loads(request.body)
         email = data.get("email")
         mode = data.get("mode", "honor")
-        is_active = data.get("is_active", True)  # Read from request
+        is_active = data.get("is_active", True)
 
         if not email:
             return JsonResponse({"error": "Email is required"}, status=400)
 
-        # Call the internal LMS enrollment API over HTTPS
-        api_url = f"https://{LMS_HOST}/api/enrollment/v1/enrollment"
-        payload = {
-            "email": email,
-            "course_id": course_id,
-            "mode": mode,
-            "is_active": is_active
-        }
+        # 1️⃣ Get or create user
+        username = email.split("@")[0]  # crude but works for demo
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={
+                "username": username,
+                "is_active": is_active,
+            },
+        )
 
-        # verify=True ensures SSL certificate is checked; set verify=False if self-signed
-        resp = requests.post(api_url, json=payload, verify=True)
+        # 2️⃣ Create empty Google social auth if missing
+        if not UserSocialAuth.objects.filter(user=user, provider="google-oauth2").exists():
+            UserSocialAuth.objects.create(
+                user=user,
+                provider="google-oauth2",
+                uid=email,
+            )
 
-        return JsonResponse(resp.json(), status=resp.status_code)
+        # 3️⃣ Create user profile
+        user = User.objects.get(username=username)
+        profile, created = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={"name": user.username}
+        )
+        course_key = CourseKey.from_string(course_id)
+        enrollment = CourseEnrollment.enroll(user, course_key, mode="honor")
 
-    except requests.exceptions.SSLError:
-        return JsonResponse({"error": "SSL verification failed. Check your LMS certificate."}, status=500)
+
+        return JsonResponse({
+            "success": True,
+            "username": user.username,
+            "email": user.email,
+            "course_id": str(course_key),
+            "mode": enrollment.mode,
+            "is_active": is_active,
+            "enroll_status": enrollment.is_active,
+            "new_user_created": created,
+        })
+
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
