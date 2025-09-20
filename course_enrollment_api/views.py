@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from common.djangoapps.student.models import UserProfile, CourseEnrollment
 from opaque_keys.edx.keys import CourseKey
+from social_django.models import UserSocialAuth
+
 
 User = get_user_model()
 
