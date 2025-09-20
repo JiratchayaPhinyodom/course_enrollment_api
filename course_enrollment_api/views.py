@@ -1,11 +1,10 @@
+
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import get_user_model
-from common.djangoapps.student.models import CourseEnrollment
-from social_django.models import UserSocialAuth
-
-
+from django.contrib.auth.models import User
+from common.djangoapps.student.models import UserProfile, CourseEnrollment
+from opaque_keys.edx.keys import CourseKey
 User = get_user_model()
 
 
@@ -41,18 +40,26 @@ def enroll_user(request, course_id):
                 uid=email,
             )
 
-        # 3️⃣ Enroll user in course
-        CourseEnrollment.enroll(user, course_id, mode=mode, is_active=is_active)
-
-        return JsonResponse(
-            {
-                "status": "success",
-                "user_created": created,
-                "enrolled": True,
-                "course_id": course_id,
-                "email": email,
-            }
+        # 3️⃣ Create user profile
+        user = User.objects.get(username=username)
+        profile, created = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={"name": user.username}
         )
+        course_key = CourseKey.from_string(course_id)
+        enrollment = CourseEnrollment.enroll(user, course_key, mode="honor")
+
+
+        return JsonResponse({
+            "success": True,
+            "username": user.username,
+            "email": user.email,
+            "course_id": str(course_key),
+            "mode": enrollment.mode,
+            "is_active": is_active,
+            "enroll_status": enrollment.is_active,
+            "new_user_created": created,
+        })
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
