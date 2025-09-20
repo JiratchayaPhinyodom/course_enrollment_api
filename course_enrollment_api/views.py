@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from common.djangoapps.student.models import UserProfile, CourseEnrollment
 from opaque_keys.edx.keys import CourseKey
 from social_django.models import UserSocialAuth
-
+from core.djangoapps.django_comment_common.models import assign_default_role
 
 User = get_user_model()
 
@@ -49,8 +49,9 @@ def enroll_user(request, course_id):
             defaults={"name": user.username}
         )
         course_key = CourseKey.from_string(course_id)
-        enrollment = CourseEnrollment.enroll(user, course_key, mode="honor")
+        enrollment = CourseEnrollment.enroll(user, course_key, mode=mode)
 
+        assign_default_role(course_key, user)
 
         return JsonResponse({
             "success": True,
