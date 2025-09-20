@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from common.djangoapps.student.models import UserProfile, CourseEnrollment
 from opaque_keys.edx.keys import CourseKey
 from social_django.models import UserSocialAuth
-from core.djangoapps.django_comment_common.models import assign_default_role
+from openedx.core.djangoapps.django_comment_common.models import assign_default_role
 
 User = get_user_model()
 
