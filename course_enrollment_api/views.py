@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 LMS_HOST = "learn2.ku.th"  # Replace with your LMS domain
 
+
 @csrf_exempt
 def enroll_user(request, course_id):
     if request.method != "POST":
@@ -14,26 +15,40 @@ def enroll_user(request, course_id):
         data = json.loads(request.body)
         email = data.get("email")
         mode = data.get("mode", "honor")
-        is_active = data.get("is_active", True)  # Read from request
+        is_active = data.get("is_active", True)
 
         if not email:
             return JsonResponse({"error": "Email is required"}, status=400)
 
-        # Call the internal LMS enrollment API over HTTPS
+        # LMS enrollment API
         api_url = f"https://{LMS_HOST}/api/enrollment/v1/enrollment"
         payload = {
             "email": email,
             "course_id": course_id,
             "mode": mode,
-            "is_active": is_active
+            "is_active": is_active,
         }
 
-        # verify=True ensures SSL certificate is checked; set verify=False if self-signed
-        resp = requests.post(api_url, json=payload, verify=True)
+        # Forward Authorization header if present
+        headers = {"Content-Type": "application/json"}
+        auth_header = request.headers.get("Authorization")
+        if auth_header:
+            headers["Authorization"] = auth_header
 
-        return JsonResponse(resp.json(), status=resp.status_code)
+        # Call LMS API
+        resp = requests.post(api_url, json=payload, headers=headers, verify=True)
+
+        try:
+            response_data = resp.json()
+        except ValueError:
+            response_data = {"error": "Invalid response from LMS", "text": resp.text}
+
+        return JsonResponse(response_data, status=resp.status_code)
 
     except requests.exceptions.SSLError:
-        return JsonResponse({"error": "SSL verification failed. Check your LMS certificate."}, status=500)
+        return JsonResponse(
+            {"error": "SSL verification failed. Check your LMS certificate."},
+            status=500,
+        )
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
